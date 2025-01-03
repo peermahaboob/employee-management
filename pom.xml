@@ -65,6 +65,6 @@
 			</plugin>
 		</plugins>
 		<finalName>employee-management</finalName>
-	</build>
 
+	</build>
 </project>
