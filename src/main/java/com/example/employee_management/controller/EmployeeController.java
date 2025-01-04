@@ -15,26 +15,38 @@ public class EmployeeController {
     @Autowired
     private EmployeeService service;
 
+    // Ping Endpoint
     @GetMapping("/ping")
     public String ping() {
         return "pong";
     }
 
+    // Get All Employees or by ID/Name
     @GetMapping
-    public List<Employee> getAllEmployees() {
-        return service.getAllEmployees();
+    public ResponseEntity<?> getEmployees(
+            @RequestParam(required = false) Long id,
+            @RequestParam(required = false) String name) {
+        if (id != null) {
+            return service.getEmployeeById(id)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        } else if (name != null) {
+            List<Employee> employees = service.getEmployeesByName(name); // Assuming this returns a list
+            if (!employees.isEmpty()) {
+                return ResponseEntity.ok(employees);
+            }
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(service.getAllEmployees());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {
-        return service.getEmployeeById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
-    }
-
+    // Create a New Employee
     @PostMapping
     public Employee createEmployee(@RequestBody Employee employee) {
         return service.saveEmployee(employee);
     }
 
+    // Update Employee by ID
     @PutMapping("/{id}")
     public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employeeDetails) {
         try {
@@ -44,6 +56,7 @@ public class EmployeeController {
         }
     }
 
+    // Delete Employee by ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
         service.deleteEmployee(id);

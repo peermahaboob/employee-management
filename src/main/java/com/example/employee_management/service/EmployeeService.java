@@ -22,6 +22,10 @@ public class EmployeeService {
         return repository.findById(id);
     }
 
+    public List<Employee> getEmployeesByName(String name) {
+        return repository.findByNameContainingIgnoreCase(name);
+    }
+
     public Employee saveEmployee(Employee employee) {
         return repository.save(employee);
     }
